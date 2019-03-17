@@ -20,14 +20,14 @@
         </div>
       </div>
       <div class="row">
-        <div class="col text-center mt-3">
-          <textarea class="form-control" id="tags_textarea" placeholder="tags here" rows="3"></textarea>
+        <div class="col text-center mt-3 ui-widget">
+          <textarea class="form-control" id="tags" placeholder="tags here" rows="3"></textarea>
         </div>
       </div>
       <div class="row">
         <div class="col text-center mt-3">
-            <a href="#" class="btn btn-primary">Search on e621</a>
-            <a href="#" class="btn btn-primary">Search on e926</a>
+            <a href="#" id="e621_search" class="btn btn-primary">Search on e621</a>
+            <a href="#" id="e926_search" class="btn btn-primary">Search on e926</a>
         </div>
       </div>
     </div>
@@ -44,5 +44,58 @@
       src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
       integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
       crossorigin="anonymous"></script>
+    
+    <script>
+      // Based on the code form https://stackoverflow.com/a/32391784
+      $( function() {
+        function extractLast( term ) {
+          return split( term ).pop();
+        }
+
+        function split( val ) {
+          return val.split( / / );
+        }
+
+        var current_tags = "";
+        $( "#tags" ).keyup(function() {
+          current_tags = $("#tags").val();
+
+          var e621_url = "https://e621.net/post/index/1/" + encodeURIComponent(current_tags);
+          var e926_url = "https://e926.net/post/index/1/" + encodeURIComponent(current_tags);
+
+          $("#e621_search").attr("href", e621_url);
+          $("#e926_search").attr("href", e926_url);
+        });
+
+        var tag_endpoint = "https://e926.net/tag/index.json?order=count&limit=10&callback=?&name=";
+        
+          $( "#tags" ).autocomplete({
+            source: function( request, response ) {
+              // delegate back to autocomplete, but extract the last term
+              var items = [];
+              $.getJSON( tag_endpoint + split(current_tags).pop() + "*", function( data ) {
+                $.each( data, function( key, val ) {
+                  items.push( val.name );
+                  });
+                response(
+                  $.ui.autocomplete.filter(items, extractLast( request.term ))
+                );
+              });
+            },
+            select: function( event, ui ) {
+              var terms = split( this.value );
+              // remove the current input
+              terms.pop();
+              // add the selected item
+              terms.push( ui.item.value );
+              // add placeholder to get the comma-and-space at the end
+              terms.push( "" );
+              this.value = terms.join( " " );
+              return false;
+            }
+          });
+        
+      } );
+    </script>
   </body>
 </html>
