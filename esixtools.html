@@ -58,7 +58,7 @@
         }
 
         var current_tags = "";
-        $( "#tags" ).keyup(function() {
+        $( "#tags" ).bind('input propertychange', function() {
           current_tags = $("#tags").val();
 
           var e621_url = "https://e621.net/post/index/1/" + encodeURIComponent(current_tags);
