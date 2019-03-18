@@ -49,6 +49,8 @@
     <script>
       // Based on the code form https://stackoverflow.com/a/32391784
       $( function() {
+        var current_tags = "";
+        
         function extractLast( term ) {
           return split( term ).pop();
         }
@@ -56,9 +58,8 @@
         function split( val ) {
           return val.split( / / );
         }
-
-        var current_tags = "";
-        $( "#tags" ).bind('input propertychange', function() {
+        
+        function update_search_buttons(){
           current_tags = $("#tags").val();
 
           var e621_url = "https://e621.net/post/index/1/" + encodeURIComponent(current_tags);
@@ -66,6 +67,11 @@
 
           $("#e621_search").attr("href", e621_url);
           $("#e926_search").attr("href", e926_url);
+        }
+
+        
+        $( "#tags" ).bind('input propertychange', function() {
+          update_search_buttons();
         });
 
         var tag_endpoint = "https://e926.net/tag/index.json?order=count&limit=10&callback=?&name=";
@@ -84,6 +90,7 @@
               });
             },
             select: function( event, ui ) {
+              update_search_buttons();
               var terms = split( this.value );
               // remove the current input
               terms.pop();
