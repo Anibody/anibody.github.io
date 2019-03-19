@@ -59,11 +59,11 @@
           return val.split( / / );
         }
         
-        function update_search_buttons(){
-          current_tags = $("#tags").val();
+        function update_search_buttons(values){
+	  current_tags = (values);
 
-          var e621_url = "https://e621.net/post/index/1/" + encodeURIComponent(current_tags);
-          var e926_url = "https://e926.net/post/index/1/" + encodeURIComponent(current_tags);
+          var e621_url = "https://e621.net/post/index/1/" + encodeURIComponent(values)
+          var e926_url = "https://e926.net/post/index/1/" + encodeURIComponent(values)
 
           $("#e621_search").attr("href", e621_url);
           $("#e926_search").attr("href", e926_url);
@@ -71,7 +71,7 @@
 
         
         $( "#tags" ).bind('input propertychange', function() {
-          update_search_buttons();
+          update_search_buttons($("#tags").val());
         });
 
         var tag_endpoint = "https://e926.net/tag/index.json?order=count&limit=10&callback=?&name=";
@@ -90,7 +90,6 @@
               });
             },
             select: function( event, ui ) {
-              update_search_buttons();
               var terms = split( this.value );
               // remove the current input
               terms.pop();
@@ -99,6 +98,7 @@
               // add placeholder to get the comma-and-space at the end
               terms.push( "" );
               this.value = terms.join( " " );
+              update_search_buttons(this.value);
               return false;
             }
           });
