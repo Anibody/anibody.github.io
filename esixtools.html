@@ -100,6 +100,9 @@
               this.value = terms.join( " " );
               update_search_buttons(this.value);
               return false;
+            },
+            focus: function( event, ui ) {
+              return false;
             }
           });
         
